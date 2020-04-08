@@ -91,9 +91,8 @@ func (a *activator) activateAndWait(hostname string) (string, int, error) {
 	// or time out.
 	select {
 	case <-deploymentActivation.successCh:
-		glog.Infof("activation successful for %s:%s, now sleeping for a second an", app.targetHost, app.targetPort)
-		timer := time.NewTimer(time.Second) // Defer for a second before moving on, so IPVS rules sync etc
-		timer.Stop()
+		podIP := <-deploymentActivation.successCh
+		glog.Infof("activation successful for %v:%s, now sleeping for a second an", podIP, app.targetPort)
 		return app.targetHost, app.targetPort, nil
 	case <-deploymentActivation.timeoutCh:
 		return "", 0, fmt.Errorf(

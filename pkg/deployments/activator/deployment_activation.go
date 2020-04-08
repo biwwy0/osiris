@@ -113,7 +113,10 @@ func (d *deploymentActivation) checkActivationComplete() {
 		for _, subset := range d.endpoints.Subsets {
 			for _, address := range subset.Addresses {
 				if _, ok := d.readyAppPodIPs[address.IP]; ok {
-					glog.Infof("App pod with ip %s is in service", address.IP)
+					glog.Infof("App pod with ip %s is in service, now sleeping for 1s", address.IP)
+					d.successCh <- address.IP
+					timer := time.NewTimer(1 * time.Second)
+					timer.Stop()
 					close(d.successCh)
 					return
 				}
