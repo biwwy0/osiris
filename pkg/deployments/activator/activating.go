@@ -23,7 +23,7 @@ func (a *activator) activateDeployment(
 	}
 	da := &deploymentActivation{
 		readyAppPodIPs: map[string]struct{}{},
-		successCh:      make(chan struct{}),
+		successCh:      make(chan string),
 		timeoutCh:      make(chan struct{}),
 	}
 	glog.Infof(
