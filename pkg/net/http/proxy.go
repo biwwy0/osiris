@@ -110,6 +110,7 @@ func (h *http1xProxyRequestHandler) ServeHTTP(
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
+	glog.Infof("Proxying for host %s", targetURL)
 	proxy := httputil.NewSingleHostReverseProxy(targetURL)
 	h.proxyRequestFn(w, r, proxy)
 	if h.endProxyCallback != nil {
