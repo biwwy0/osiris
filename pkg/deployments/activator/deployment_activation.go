@@ -114,7 +114,6 @@ func (d *deploymentActivation) checkActivationComplete() {
 			for _, address := range subset.Addresses {
 				if _, ok := d.readyAppPodIPs[address.IP]; ok {
 					glog.Infof("App pod with ip %s is in service", address.IP)
-					d.successCh <- address.IP
 					close(d.successCh)
 					return
 				}

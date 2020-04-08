@@ -2,6 +2,7 @@ package activator
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/golang/glog"
 )
@@ -84,14 +85,15 @@ func (a *activator) activateAndWait(hostname string) (string, int, error) {
 			)
 		}
 	}
-	podIP := <-deploymentActivation.successCh
+
 	// Regardless of whether we just started an activation or found one already in
 	// progress, we need to wait for that activation to be completed... or fail...
 	// or time out.
 	select {
 	case <-deploymentActivation.successCh:
-		glog.Infof("activation successful for %v:%s, now sleeping for a second an", podIP, app.targetPort)
-		return podIP, app.targetPort, nil
+		glog.Infof("activation successful for %v:%s, now sleeping for 2 seconds", app.targetHost, app.targetPort)
+		time.Sleep(1 * time.Second)
+		return app.targetHost, app.targetPort, nil
 	case <-deploymentActivation.timeoutCh:
 		return "", 0, fmt.Errorf(
 			"Timed out waiting for activation of deployment %s in namespace %s: %s",
