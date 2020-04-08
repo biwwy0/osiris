@@ -5,7 +5,7 @@ image:
   ## Image location, NOT including the tag
   repository: aaabbb000/osiris
   ## Image tag
-  tag: bcd92a3 # This gets automatically overridden by our release process
+  tag: 3da548d # This gets automatically overridden by our release process
   ## "IfNotPresent", "Always", or "Never"
   pullPolicy: Always # This gets automatically overridden by our release process
 
