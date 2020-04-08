@@ -5,11 +5,12 @@ image:
   ## Image location, NOT including the tag
   repository: aaabbb000/osiris
   ## Image tag
-  tag: f215bc9-dirty # This gets automatically overridden by our release process
+  tag: c1fb1bc # This gets automatically overridden by our release process
   ## "IfNotPresent", "Always", or "Never"
   pullPolicy: Always # This gets automatically overridden by our release process
 
 activator:
+  clusterIP: 10.3.0.2
   replicaCount: 2
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious

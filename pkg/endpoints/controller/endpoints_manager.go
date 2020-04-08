@@ -25,6 +25,7 @@ const (
 	// TolerateUnreadyEndpointsAnnotation definition from
 	// k8s.io/kubernetes/pkg/controller/endpoint
 	tolerateAnnoration = "service.alpha.kubernetes.io/tolerate-unready-endpoints"
+	clusterIP = "10.3.0.2" // hardcoding IP for activator service
 )
 
 // endpointsManager is a controller responsible for the on-going management of
@@ -228,7 +229,7 @@ func (e *endpointsManager) syncEndpoints() {
 			// None of the ready pods expose a back end service for this service's
 			// port. i.e. There are no endpoints. Add activator endpoints instead.
 			subsets = append(subsets, corev1.EndpointSubset{
-				Addresses: []corev1.EndpointAddress{{IP: "10.3.92.31"}},
+				Addresses: []corev1.EndpointAddress{{IP: clusterIP}},
 				Ports:     []corev1.EndpointPort{{Port: 5000, Protocol: "TCP"}},
 			})
 		}
