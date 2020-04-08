@@ -3,14 +3,14 @@ fullnameOverride: ""
 
 image:
   ## Image location, NOT including the tag
-  repository: osiris.azurecr.io/osiris
+  repository: aaabbb000/osiris
   ## Image tag
-  tag: edge # This gets automatically overridden by our release process
+  tag: f215bc9-dirty # This gets automatically overridden by our release process
   ## "IfNotPresent", "Always", or "Never"
   pullPolicy: Always # This gets automatically overridden by our release process
 
 activator:
-  replicaCount: 1
+  replicaCount: 2
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little

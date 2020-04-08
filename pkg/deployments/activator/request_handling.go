@@ -90,6 +90,7 @@ func (a *activator) activateAndWait(hostname string) (string, int, error) {
 	// or time out.
 	select {
 	case <-deploymentActivation.successCh:
+		glog.Infof("activation successful for %s:%s", app.targetHost, app.targetPort)
 		return app.targetHost, app.targetPort, nil
 	case <-deploymentActivation.timeoutCh:
 		return "", 0, fmt.Errorf(
