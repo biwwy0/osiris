@@ -227,30 +227,19 @@ func (e *endpointsManager) syncEndpoints() {
 		if !foundSuitableAppPod {
 			// None of the ready pods expose a back end service for this service's
 			// port. i.e. There are no endpoints. Add activator endpoints instead.
-			for _, proxyPod := range e.controller.readyActivatorPods {
-				subsets = append(subsets, corev1.EndpointSubset{
-					Addresses: []corev1.EndpointAddress{
-						{
-							IP: proxyPod.Status.PodIP,
-						},
-					},
-					Ports: []corev1.EndpointPort{
-						{
-							Name:     servicePort.Name,
-							Port:     5000, // TODO: Maybe don't hard-code this?
-							Protocol: servicePort.Protocol,
-						},
-					},
-				})
-			}
+			subsets = append(subsets, corev1.EndpointSubset{
+				Addresses: []corev1.EndpointAddress{{IP: "10.3.92.31"}},
+				Ports:     []corev1.EndpointPort{{Port: 5000, Protocol: "TCP"}},
+			})
 		}
 	}
 	subsets = endpointsv1.RepackSubsets(subsets)
 
 	glog.Infof(
-		"Creating or updating endpoints object for service %s in namespace %s",
+		"Creating or updating endpoints object for service %s in namespace %s with subsets %v",
 		e.service.Name,
 		e.service.Namespace,
+		subsets,
 	)
 	if _, err := e.controller.kubeClient.CoreV1().Endpoints(
 		e.service.Namespace,
