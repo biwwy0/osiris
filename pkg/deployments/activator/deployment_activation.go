@@ -6,7 +6,7 @@ import (
 	"time"
 
 	k8s "github.com/deislabs/osiris/pkg/kubernetes"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/labels"
@@ -68,7 +68,7 @@ func (d *deploymentActivation) watchForCompletion(
 		case <-d.successCh:
 			return
 		case <-timer.C:
-			glog.Errorf(
+			klog.Errorf(
 				"Activation of deployment %s in namespace %s timed out",
 				app.deploymentName,
 				app.namespace,
@@ -83,18 +83,18 @@ func (d *deploymentActivation) syncPod(obj interface{}) {
 	d.lock.Lock()
 	defer d.lock.Unlock()
 	pod := obj.(*corev1.Pod)
-	glog.Infof("so we got to syncPod with this %v:", pod.Status.Conditions)
+	klog.Infof("so we got to syncPod with this %v:", pod.Status.Conditions)
 	var ready bool
 	for _, condition := range pod.Status.Conditions {
 		if condition.Type == corev1.PodReady {
 			if condition.Status == corev1.ConditionTrue {
-				glog.Infof("Pod is Ready")
+				klog.Infof("Pod is Ready")
 				ready = true
 			}
 			break
 		}
 	}
-	glog.Infof("we are %s, getting further and we need to return this IP %v", ready, pod.Status.PodIP)
+	klog.Infof("we are %s, getting further and we need to return this IP %v", ready, pod.Status.PodIP)
 	// Keep track of which pods are ready
 	if ready {
 		d.readyAppPodIPs[pod.Status.PodIP] = struct{}{}
@@ -105,7 +105,7 @@ func (d *deploymentActivation) syncPod(obj interface{}) {
 }
 
 func (d *deploymentActivation) syncEndpoints(obj interface{}) {
-	glog.Infof("so we got to syncEndpoints with this %v:", obj)
+	klog.Infof("so we got to syncEndpoints with this %v:", obj)
 	d.lock.Lock()
 	defer d.lock.Unlock()
 	d.endpoints = obj.(*corev1.Endpoints)
@@ -113,12 +113,12 @@ func (d *deploymentActivation) syncEndpoints(obj interface{}) {
 }
 
 func (d *deploymentActivation) checkActivationComplete() {
-	glog.Infof("And we reached checkActivationComplete() with this endpoints: %v", d.endpoints)
+	klog.Infof("And we reached checkActivationComplete() with this endpoints: %v", d.endpoints)
 	if d.endpoints != nil {
 		for _, subset := range d.endpoints.Subsets {
 			for _, address := range subset.Addresses {
 				if _, ok := d.readyAppPodIPs[address.IP]; ok {
-					glog.Infof("App pod with ip %s is in service", address.IP)
+					klog.Infof("App pod with ip %s is in service", address.IP)
 					close(d.successCh)
 					return
 				}

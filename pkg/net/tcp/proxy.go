@@ -6,7 +6,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 type l4StartProxyCallback func(serverName string) (string, int, error)
@@ -24,7 +24,7 @@ func defaultProxyConnection(
 	if endProxyCallback != nil {
 		defer func() {
 			if err := endProxyCallback(serverName); err != nil {
-				glog.Errorf(
+				klog.Errorf(
 					"Error executing end proxy callback for server name \"%s\": %s",
 					serverName,
 					err,
@@ -68,7 +68,7 @@ func defaultProxyConnection(
 		// destination end hung up already.
 		if gerr != nil &&
 			!strings.Contains(gerr.Error(), "connection reset by peer") {
-			glog.Errorf(
+			klog.Errorf(
 				"Error streaming bytes from target connection to client connection: %s",
 				gerr,
 			)
@@ -79,7 +79,7 @@ func defaultProxyConnection(
 	// destination end hung up already.
 	if err != nil &&
 		!strings.Contains(err.Error(), "connection reset by peer") {
-		glog.Errorf(
+		klog.Errorf(
 			"Error streaming bytes from client connection to target connection: %s",
 			err,
 		)

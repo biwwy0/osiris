@@ -6,11 +6,11 @@ import (
 	endpoints "github.com/deislabs/osiris/pkg/endpoints/controller"
 	"github.com/deislabs/osiris/pkg/kubernetes"
 	"github.com/deislabs/osiris/pkg/version"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 func runEndpointsController(ctx context.Context) {
-	glog.Infof(
+	klog.Infof(
 		"Starting Osiris Endpoints Controller -- version %s -- commit %s",
 		version.Version(),
 		version.Commit(),
@@ -18,12 +18,12 @@ func runEndpointsController(ctx context.Context) {
 
 	client, err := kubernetes.Client()
 	if err != nil {
-		glog.Fatalf("Error building kubernetes clientset: %s", err)
+		klog.Fatalf("Error building kubernetes clientset: %s", err)
 	}
 
 	controllerCfg, err := endpoints.GetConfigFromEnvironment()
 	if err != nil {
-		glog.Fatalf(
+		klog.Fatalf(
 			"Error retrieving endpoints controller configuration: %s",
 			err,
 		)

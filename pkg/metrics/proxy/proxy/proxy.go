@@ -12,7 +12,7 @@ import (
 	"github.com/deislabs/osiris/pkg/healthz"
 	"github.com/deislabs/osiris/pkg/metrics"
 	"github.com/deislabs/osiris/pkg/net/tcp"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -89,7 +89,7 @@ func (p *proxy) Run(ctx context.Context) {
 	for _, dp := range p.dynamicProxies {
 		go func(dp tcp.DynamicProxy) {
 			if err := dp.ListenAndServe(ctx); err != nil {
-				glog.Errorf("Error listening and serving: %s", err)
+				klog.Errorf("Error listening and serving: %s", err)
 			}
 			cancel()
 		}(dp)
@@ -101,7 +101,7 @@ func (p *proxy) Run(ctx context.Context) {
 	go func() {
 		select {
 		case <-ctx.Done(): // Context was canceled or expired
-			glog.Info("Healthz and metrics server is shutting down")
+			klog.Info("Healthz and metrics server is shutting down")
 			// Allow up to five seconds for requests in progress to be completed
 			shutdownCtx, shutdownCancel := context.WithTimeout(
 				context.Background(),
@@ -114,13 +114,13 @@ func (p *proxy) Run(ctx context.Context) {
 		cancel()
 	}()
 
-	glog.Infof(
+	klog.Infof(
 		"Healthz and metrics server is listening on %s",
 		p.healthzAndMetricsSvr.Addr,
 	)
 	err := p.healthzAndMetricsSvr.ListenAndServe()
 	if err != http.ErrServerClosed {
-		glog.Errorf("Error from healthz and metrics server: %s", err)
+		klog.Errorf("Error from healthz and metrics server: %s", err)
 	}
 }
 
@@ -132,12 +132,12 @@ func (p *proxy) handleMetricsRequest(w http.ResponseWriter, _ *http.Request) {
 	}
 	pcsBytes, err := json.Marshal(pcs)
 	if err != nil {
-		glog.Errorf("Error marshaling metrics request response: %s", err)
+		klog.Errorf("Error marshaling metrics request response: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	if _, err := w.Write(pcsBytes); err != nil {
-		glog.Errorf("Error writing metrics request response body: %s", err)
+		klog.Errorf("Error writing metrics request response body: %s", err)
 	}
 }
 

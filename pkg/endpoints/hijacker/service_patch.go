@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/deislabs/osiris/pkg/kubernetes"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -28,7 +28,7 @@ func getServicePatchOperations(
 	// Service is Osiris-enabled... make it so...
 	if kubernetes.ResourceIsOsirisEnabled(svc.Annotations) {
 
-		glog.Infof("Hijacking service %s", svc.Name)
+		klog.Infof("Hijacking service %s", svc.Name)
 
 		if len(svc.Spec.Selector) == 0 {
 			return nil, nil

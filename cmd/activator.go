@@ -6,11 +6,11 @@ import (
 	deployments "github.com/deislabs/osiris/pkg/deployments/activator"
 	"github.com/deislabs/osiris/pkg/kubernetes"
 	"github.com/deislabs/osiris/pkg/version"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 func runActivator(ctx context.Context) {
-	glog.Infof(
+	klog.Infof(
 		"Starting Osiris Activator -- version %s -- commit %s",
 		version.Version(),
 		version.Commit(),
@@ -18,12 +18,12 @@ func runActivator(ctx context.Context) {
 
 	client, err := kubernetes.Client()
 	if err != nil {
-		glog.Fatalf("Error building kubernetes clientset: %s", err)
+		klog.Fatalf("Error building kubernetes clientset: %s", err)
 	}
 
 	activator, err := deployments.NewActivator(client)
 	if err != nil {
-		glog.Fatalf("Error initializing activator: %s", err)
+		klog.Fatalf("Error initializing activator: %s", err)
 	}
 
 	// Run the activator

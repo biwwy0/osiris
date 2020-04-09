@@ -5,11 +5,11 @@ import (
 
 	endpoints "github.com/deislabs/osiris/pkg/endpoints/hijacker"
 	"github.com/deislabs/osiris/pkg/version"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 func runEndpointsHijacker(ctx context.Context) {
-	glog.Infof(
+	klog.Infof(
 		"Starting Osiris Endpoints Hijacker -- version %s -- commit %s",
 		version.Version(),
 		version.Commit(),
@@ -17,7 +17,7 @@ func runEndpointsHijacker(ctx context.Context) {
 
 	cfg, err := endpoints.GetConfigFromEnvironment()
 	if err != nil {
-		glog.Fatalf(
+		klog.Fatalf(
 			"Error retrieving proxy endpoints hijacker webhook server "+
 				"configuration: %s",
 			err,

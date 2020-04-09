@@ -10,7 +10,7 @@ import (
 
 	"github.com/deislabs/osiris/pkg/healthz"
 	k8s "github.com/deislabs/osiris/pkg/kubernetes"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -60,9 +60,9 @@ func (z *zeroscaler) Run(ctx context.Context) {
 	z.ctx = ctx
 	go func() {
 		<-ctx.Done()
-		glog.Infof("Zeroscaler is shutting down")
+		klog.Infof("Zeroscaler is shutting down")
 	}()
-	glog.Infof("Zeroscaler is started")
+	klog.Infof("Zeroscaler is started")
 	go func() {
 		z.deploymentsInformer.Run(ctx.Done())
 		cancel()
@@ -74,7 +74,7 @@ func (z *zeroscaler) Run(ctx context.Context) {
 func (z *zeroscaler) syncDeployment(obj interface{}) {
 	deployment := obj.(*appsv1.Deployment)
 	if k8s.ResourceIsOsirisEnabled(deployment.Annotations) {
-		glog.Infof(
+		klog.Infof(
 			"Notified about new or updated Osiris-enabled deployment %s in "+
 				"namespace %s",
 			deployment.Name,
@@ -83,7 +83,7 @@ func (z *zeroscaler) syncDeployment(obj interface{}) {
 		minReplicas := k8s.GetMinReplicas(deployment.Annotations, 1)
 		if *deployment.Spec.Replicas > 0 &&
 			deployment.Status.AvailableReplicas <= minReplicas {
-			glog.Infof(
+			klog.Infof(
 				"Osiris-enabled deployment %s in namespace %s is running the minimun "+
 					"number of replicas or fewer; ensuring metrics collection",
 				deployment.Name,
@@ -91,7 +91,7 @@ func (z *zeroscaler) syncDeployment(obj interface{}) {
 			)
 			z.ensureMetricsCollection(deployment)
 		} else {
-			glog.Infof(
+			klog.Infof(
 				"Osiris-enabled deployment %s in namespace %s is running zero "+
 					"replicas OR more than the minimum number of replicas; ensuring "+
 					"NO metrics collection",
@@ -101,7 +101,7 @@ func (z *zeroscaler) syncDeployment(obj interface{}) {
 			z.ensureNoMetricsCollection(deployment)
 		}
 	} else {
-		glog.Infof(
+		klog.Infof(
 			"Notified about new or updated non-Osiris-enabled deployment %s in "+
 				"namespace %s; ensuring NO metrics collection",
 			deployment.Name,
@@ -113,7 +113,7 @@ func (z *zeroscaler) syncDeployment(obj interface{}) {
 
 func (z *zeroscaler) syncDeletedDeployment(obj interface{}) {
 	deployment := obj.(*appsv1.Deployment)
-	glog.Infof(
+	klog.Infof(
 		"Notified about deleted deployment %s in namespace %s; ensuring NO "+
 			"metrics collection",
 		deployment.Name,
@@ -133,7 +133,7 @@ func (z *zeroscaler) ensureMetricsCollection(deployment *appsv1.Deployment) {
 		if ok {
 			collector.stop()
 		}
-		glog.Infof(
+		klog.Infof(
 			"Using new metrics collector for deployment %s in namespace %s "+
 				"with metrics check interval of %s",
 			deployment.Name,
@@ -158,7 +158,7 @@ func (z *zeroscaler) ensureMetricsCollection(deployment *appsv1.Deployment) {
 		z.collectors[key] = collector
 		return
 	}
-	glog.Infof(
+	klog.Infof(
 		"Using existing metrics collector for deployment %s in namespace %s",
 		deployment.Name,
 		deployment.Namespace,
@@ -186,7 +186,7 @@ func (z *zeroscaler) getMetricsCheckInterval(
 		deployment.Annotations[k8s.MetricsCheckIntervalAnnotationName]; ok {
 		metricsCheckInterval, err = strconv.Atoi(rawMetricsCheckInterval)
 		if err != nil {
-			glog.Warningf(
+			klog.Warningf(
 				"There was an error getting custom metrics check interval value "+
 					"in deployment %s, falling back to the default value of %d "+
 					"seconds; error: %s",
@@ -198,7 +198,7 @@ func (z *zeroscaler) getMetricsCheckInterval(
 		}
 	}
 	if metricsCheckInterval <= 0 {
-		glog.Warningf(
+		klog.Warningf(
 			"Invalid custom metrics check interval value %d in deployment %s,"+
 				" falling back to the default value of %d seconds",
 			metricsCheckInterval,

@@ -8,7 +8,7 @@ import (
 	"net/url"
 
 	"github.com/deislabs/osiris/pkg/net/http/httputil"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	"golang.org/x/net/http2"
 )
 
@@ -94,7 +94,7 @@ func (h *http1xProxyRequestHandler) ServeHTTP(
 	if h.startProxyCallback != nil {
 		th, tp, err := h.startProxyCallback(r)
 		if err != nil {
-			glog.Errorf(
+			klog.Errorf(
 				"Error executing start proxy callback for host \"%s\": %s",
 				r.Host,
 				err,
@@ -106,16 +106,16 @@ func (h *http1xProxyRequestHandler) ServeHTTP(
 	}
 	targetURL, err := url.Parse(fmt.Sprintf("http://%s", targetHost))
 	if err != nil {
-		glog.Errorf("Error parsing target URL for host \"%s\": %s", targetHost, err)
+		klog.Errorf("Error parsing target URL for host \"%s\": %s", targetHost, err)
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
-	glog.Infof("Proxying for host %s", targetURL)
+	klog.Infof("Proxying for host %s", targetURL)
 	proxy := httputil.NewSingleHostReverseProxy(targetURL)
 	h.proxyRequestFn(w, r, proxy)
 	if h.endProxyCallback != nil {
 		if err := h.endProxyCallback(r); err != nil {
-			glog.Errorf(
+			klog.Errorf(
 				"Error executing end proxy callback for host \"%s\": %s",
 				r.Host,
 				err,
@@ -151,7 +151,7 @@ func (h *http2xProxyRequestHandler) ServeHTTP(
 	if h.startProxyCallback != nil {
 		th, tp, err := h.startProxyCallback(r)
 		if err != nil {
-			glog.Errorf(
+			klog.Errorf(
 				"Error executing start proxy callback for host \"%s\": %s",
 				r.Host,
 				err,
@@ -163,7 +163,7 @@ func (h *http2xProxyRequestHandler) ServeHTTP(
 	}
 	targetURL, err := url.Parse(fmt.Sprintf("http://%s", targetHost))
 	if err != nil {
-		glog.Errorf("Error parsing target URL for host \"%s\": %s", targetHost, err)
+		klog.Errorf("Error parsing target URL for host \"%s\": %s", targetHost, err)
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
@@ -172,7 +172,7 @@ func (h *http2xProxyRequestHandler) ServeHTTP(
 	h.proxyRequestFn(w, r, proxy)
 	if h.endProxyCallback != nil {
 		if err := h.endProxyCallback(r); err != nil {
-			glog.Errorf(
+			klog.Errorf(
 				"Error executing end proxy callback for host \"%s\": %s",
 				r.Host,
 				err,

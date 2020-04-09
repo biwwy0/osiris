@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 // Context returns a context which will be canceled when either the SIGINT or
@@ -19,10 +19,10 @@ func Context() context.Context {
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		sig := <-sigCh
-		glog.Infof(`Received signal "%s"; beginning shutdown`, sig)
+		klog.Infof(`Received signal "%s"; beginning shutdown`, sig)
 		cancel()
 		sig = <-sigCh
-		glog.Fatalf(
+		klog.Fatalf(
 			`Received signal "%s" during shutdown; exiting immediately`,
 			sig,
 		)

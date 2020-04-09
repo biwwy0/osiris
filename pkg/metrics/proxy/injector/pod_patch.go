@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/deislabs/osiris/pkg/kubernetes"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	"k8s.io/api/admission/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -24,11 +24,11 @@ func (i *injector) getPodPatchOperations(
 	req := ar.Request
 	var pod corev1.Pod
 	if err := json.Unmarshal(req.Object.Raw, &pod); err != nil {
-		glog.Errorf("Could not unmarshal raw object: %v", err)
+		klog.Errorf("Could not unmarshal raw object: %v", err)
 		return nil, err
 	}
 
-	glog.Infof(
+	klog.Infof(
 		"AdmissionReview for Kind=%v, Namespace=%v Name=%v (%v) UID=%v "+
 			"patchOperation=%v UserInfo=%v",
 		req.Kind,

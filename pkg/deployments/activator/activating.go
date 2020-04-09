@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/deislabs/osiris/pkg/kubernetes"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	k8s_types "k8s.io/apimachinery/pkg/types"
@@ -26,7 +26,7 @@ func (a *activator) activateDeployment(
 		successCh:      make(chan string),
 		timeoutCh:      make(chan struct{}),
 	}
-	glog.Infof(
+	klog.Infof(
 		"Activating deployment %s in namespace %s",
 		app.deploymentName,
 		app.namespace,

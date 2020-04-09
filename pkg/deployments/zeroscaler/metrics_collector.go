@@ -11,7 +11,7 @@ import (
 
 	k8s "github.com/deislabs/osiris/pkg/kubernetes"
 	"github.com/deislabs/osiris/pkg/metrics"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	k8s_types "k8s.io/apimachinery/pkg/types"
@@ -81,13 +81,13 @@ func (m *metricsCollector) run(ctx context.Context) {
 	defer m.cancelFunc()
 	go func() {
 		<-ctx.Done()
-		glog.Infof(
+		klog.Infof(
 			"Stopping metrics collection for deployment %s in namespace %s",
 			m.deploymentName,
 			m.deploymentNamespace,
 		)
 	}()
-	glog.Infof(
+	klog.Infof(
 		"Starting metrics collection for deployment %s in namespace %s",
 		m.deploymentName,
 		m.deploymentNamespace,
@@ -246,12 +246,12 @@ func (m *metricsCollector) scrape(
 	// Requests made with this client time out after 2 seconds
 	resp, err := m.httpClient.Get(target)
 	if err != nil {
-		glog.Errorf("Error requesting metrics from %s: %s", target, err)
+		klog.Errorf("Error requesting metrics from %s: %s", target, err)
 		return pcs, false
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		glog.Errorf(
+		klog.Errorf(
 			"Received unexpected HTTP response code %d when requesting metrics "+
 				"from %s",
 			resp.StatusCode,
@@ -261,7 +261,7 @@ func (m *metricsCollector) scrape(
 	}
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		glog.Errorf(
+		klog.Errorf(
 			"Error reading metrics request response from %s: %s",
 			target,
 			err,
@@ -269,7 +269,7 @@ func (m *metricsCollector) scrape(
 		return pcs, false
 	}
 	if err := json.Unmarshal(bodyBytes, &pcs); err != nil {
-		glog.Errorf(
+		klog.Errorf(
 			"Error umarshaling metrics request response from %s: %s",
 			target,
 			err,
@@ -280,7 +280,7 @@ func (m *metricsCollector) scrape(
 }
 
 func (m *metricsCollector) scaleToZero() {
-	glog.Infof(
+	klog.Infof(
 		"Scale to zero starting for deployment %s in namespace %s",
 		m.deploymentName,
 		m.deploymentNamespace,
@@ -297,7 +297,7 @@ func (m *metricsCollector) scaleToZero() {
 		k8s_types.JSONPatchType,
 		patchesBytes,
 	); err != nil {
-		glog.Errorf(
+		klog.Errorf(
 			"Error scaling deployment %s in namespace %s to zero: %s",
 			m.deploymentName,
 			m.deploymentNamespace,
@@ -306,7 +306,7 @@ func (m *metricsCollector) scaleToZero() {
 		return
 	}
 
-	glog.Infof(
+	klog.Infof(
 		"Scaled deployment %s in namespace %s to zero",
 		m.deploymentName,
 		m.deploymentNamespace,

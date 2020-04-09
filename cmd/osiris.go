@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/deislabs/osiris/pkg/signals"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 	flag.Parse()
 
 	if len(flag.Args()) != 1 {
-		glog.Fatal(usageMsg)
+		klog.Fatal(usageMsg)
 	}
 
 	// This context will automatically be canceled on SIGINT or SIGTERM.
@@ -38,11 +38,11 @@ func main() {
 	case "zeroscaler":
 		runZeroScaler(ctx)
 	default:
-		glog.Fatal(usageMsg)
+		klog.Fatal(usageMsg)
 	}
 
 	// A short grace period
 	shutdownDuration := 5 * time.Second
-	glog.Infof("allowing %s for graceful shutdown to complete", shutdownDuration)
+	klog.Infof("allowing %s for graceful shutdown to complete", shutdownDuration)
 	<-time.After(shutdownDuration)
 }

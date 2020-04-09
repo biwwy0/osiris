@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 func RunServer(ctx context.Context, port int) {
@@ -22,7 +22,7 @@ func RunServer(ctx context.Context, port int) {
 	go func() {
 		select {
 		case <-ctx.Done(): // Context was canceled or expired
-			glog.Info("Healthz server is shutting down")
+			klog.Info("Healthz server is shutting down")
 			// Allow up to five seconds for requests in progress to be completed
 			shutdownCtx, cancel := context.WithTimeout(
 				context.Background(),
@@ -34,10 +34,10 @@ func RunServer(ctx context.Context, port int) {
 		}
 	}()
 
-	glog.Infof("Healthz server is listening on %s", srv.Addr)
+	klog.Infof("Healthz server is listening on %s", srv.Addr)
 	err := srv.ListenAndServe()
 	if err != http.ErrServerClosed {
-		glog.Errorf("Healthz server error: %s", err)
+		klog.Errorf("Healthz server error: %s", err)
 		err = nil
 	}
 	close(doneCh)

@@ -5,11 +5,11 @@ import (
 
 	proxy "github.com/deislabs/osiris/pkg/metrics/proxy/injector"
 	"github.com/deislabs/osiris/pkg/version"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 func runProxyInjector(ctx context.Context) {
-	glog.Infof(
+	klog.Infof(
 		"Starting Osiris Proxy Injector -- version %s -- commit %s",
 		version.Version(),
 		version.Commit(),
@@ -17,7 +17,7 @@ func runProxyInjector(ctx context.Context) {
 
 	cfg, err := proxy.GetConfigFromEnvironment()
 	if err != nil {
-		glog.Fatalf(
+		klog.Fatalf(
 			"Error retrieving proxy injector configuration: %s",
 			err,
 		)

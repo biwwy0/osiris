@@ -10,7 +10,7 @@ import (
 	mynet "github.com/deislabs/osiris/pkg/net"
 	"github.com/deislabs/osiris/pkg/net/http"
 	"github.com/deislabs/osiris/pkg/net/tls"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 // DynamicProxy is an interface for components that can listen for TCP
@@ -101,19 +101,19 @@ func (d *dynamicProxy) ListenAndServe(ctx context.Context) error {
 			// us an opportunity to loop and check if the context has expired.
 			if err :=
 				listener.SetDeadline(time.Now().Add(5 * time.Second)); err != nil {
-				glog.Errorf("Error setting read deadline: %s", err)
+				klog.Errorf("Error setting read deadline: %s", err)
 			}
 			conn, err := listener.AcceptTCP()
 			if err != nil {
 				if err, ok := err.(net.Error); !ok || !err.Timeout() {
-					glog.Errorf("Error accepting connection: %s", err)
+					klog.Errorf("Error accepting connection: %s", err)
 				}
 				continue
 			}
 			go func() {
 				defer conn.Close()
 				if err := d.serveConnectionFn(conn); err != nil {
-					glog.Errorf("Error serving connection: %s", err)
+					klog.Errorf("Error serving connection: %s", err)
 				}
 			}()
 		}

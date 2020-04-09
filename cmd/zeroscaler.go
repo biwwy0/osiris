@@ -6,11 +6,11 @@ import (
 	deployments "github.com/deislabs/osiris/pkg/deployments/zeroscaler"
 	"github.com/deislabs/osiris/pkg/kubernetes"
 	"github.com/deislabs/osiris/pkg/version"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 func runZeroScaler(ctx context.Context) {
-	glog.Infof(
+	klog.Infof(
 		"Starting Osiris Zeroscaler -- version %s -- commit %s",
 		version.Version(),
 		version.Commit(),
@@ -18,12 +18,12 @@ func runZeroScaler(ctx context.Context) {
 
 	client, err := kubernetes.Client()
 	if err != nil {
-		glog.Fatalf("Error building kubernetes clientset: %s", err.Error())
+		klog.Fatalf("Error building kubernetes clientset: %s", err.Error())
 	}
 
 	cfg, err := deployments.GetConfigFromEnvironment()
 	if err != nil {
-		glog.Fatalf("Error getting zeroscaler envconfig: %s", err.Error())
+		klog.Fatalf("Error getting zeroscaler envconfig: %s", err.Error())
 	}
 
 	// Run the zeroscaler

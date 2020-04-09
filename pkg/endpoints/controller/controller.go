@@ -7,7 +7,7 @@ import (
 
 	"github.com/deislabs/osiris/pkg/healthz"
 	k8s "github.com/deislabs/osiris/pkg/kubernetes"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -95,9 +95,9 @@ func (c *controller) Run(ctx context.Context) {
 	c.ctx = ctx
 	go func() {
 		<-ctx.Done()
-		glog.Infof("Controller is shutting down")
+		klog.Infof("Controller is shutting down")
 	}()
-	glog.Infof("Controller is started")
+	klog.Infof("Controller is started")
 	go func() {
 		c.activatorPodsInformer.Run(ctx.Done())
 		cancel()
@@ -117,14 +117,14 @@ func (c *controller) Run(ctx context.Context) {
 func (c *controller) syncAppService(obj interface{}) {
 	svc := obj.(*corev1.Service)
 	if k8s.ResourceIsOsirisEnabled(svc.Annotations) {
-		glog.Infof(
+		klog.Infof(
 			"Notified about new or updated Osiris-enabled service %s in namespace %s",
 			svc.Name,
 			svc.Namespace,
 		)
 		c.ensureServiceEndpointsManaged(svc)
 	} else {
-		glog.Infof(
+		klog.Infof(
 			"Notified about new or updated non-Osiris-enabled service %s in "+
 				"namespace %s",
 			svc.Name,
@@ -139,7 +139,7 @@ func (c *controller) syncAppService(obj interface{}) {
 // endpoints resource is halted.
 func (c *controller) syncDeletedAppService(obj interface{}) {
 	svc := obj.(*corev1.Service)
-	glog.Infof(
+	klog.Infof(
 		"Notified about deleted service %s in namespace %s",
 		svc.Name,
 		svc.Namespace,
@@ -162,7 +162,7 @@ func (c *controller) ensureServiceEndpointsManaged(svc *corev1.Service) {
 	// Whether net new or a replacement, it's time for a new manager...
 	m, err := newEndpointsManager(svc, c)
 	if err != nil {
-		glog.Errorf(
+		klog.Errorf(
 			"Error creating endpoints manager for service %s in namespace %s: %s",
 			svc.Name,
 			svc.Namespace,
@@ -205,7 +205,7 @@ func (c *controller) syncActivatorPod(obj interface{}) {
 			break
 		}
 	}
-	glog.Infof(
+	klog.Infof(
 		"Informed about activator pod %s; its IP is %s and its ready "+
 			"condition is %t",
 		pod.Name,
@@ -217,7 +217,7 @@ func (c *controller) syncActivatorPod(obj interface{}) {
 	} else {
 		delete(c.readyActivatorPods, pod.Name)
 	}
-	glog.Infof(
+	klog.Infof(
 		"%d pods ready for activator",
 		len(c.readyActivatorPods),
 	)

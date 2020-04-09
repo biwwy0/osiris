@@ -10,7 +10,7 @@ import (
 
 	"github.com/deislabs/osiris/pkg/kubernetes"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -101,7 +101,7 @@ func (e *endpointsManager) run(ctx context.Context) {
 	ctx, e.cancelFunc = context.WithCancel(ctx)
 	go func() {
 		<-ctx.Done()
-		glog.Infof(
+		klog.Infof(
 			"Stopping endpoints management for service %s in namespace %s",
 			e.service.Name,
 			e.service.Namespace,
@@ -147,7 +147,7 @@ func (e *endpointsManager) syncAppPod(obj interface{}) {
 		if err == nil {
 			tolerateUnreadyEndpoints = b
 		} else {
-			glog.Errorf(
+			klog.Errorf(
 				"Failed to parse annotation %v: %v",
 				tolerateAnnoration,
 				err,
@@ -158,7 +158,7 @@ func (e *endpointsManager) syncAppPod(obj interface{}) {
 	if !tolerateUnreadyEndpoints && pod.DeletionTimestamp != nil {
 		ready = false
 	}
-	glog.Infof(
+	klog.Infof(
 		"Informed about pod %s for service %s in namespace %s; its IP is %s and "+
 			"its ready condition is %t",
 		pod.Name,
@@ -172,7 +172,7 @@ func (e *endpointsManager) syncAppPod(obj interface{}) {
 	} else {
 		delete(e.readyAppPods, pod.Name)
 	}
-	glog.Infof(
+	klog.Infof(
 		"%d app pods ready for service %s in namespace %s",
 		len(e.readyAppPods),
 		e.service.Name,
@@ -187,7 +187,7 @@ func (e *endpointsManager) syncDeletedAppPod(obj interface{}) {
 	e.readyAppPodsLock.Lock()
 	defer e.readyAppPodsLock.Unlock()
 	pod := obj.(*corev1.Pod)
-	glog.Infof(
+	klog.Infof(
 		"Informed about deleted pod %s for service %s in namespace %s",
 		pod.Name,
 		e.service.Name,
@@ -236,7 +236,7 @@ func (e *endpointsManager) syncEndpoints() {
 	}
 	subsets = endpointsv1.RepackSubsets(subsets)
 
-	glog.Infof(
+	klog.Infof(
 		"Creating or updating endpoints object for service %s in namespace %s with subsets %v",
 		e.service.Name,
 		e.service.Namespace,
@@ -253,7 +253,7 @@ func (e *endpointsManager) syncEndpoints() {
 			Subsets: subsets,
 		},
 	); err != nil {
-		glog.Errorf(
+		klog.Errorf(
 			"Error creating or updating endpoints object for service %s in "+
 				"namespace %s: %s",
 			e.service.Name,

@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 func (a *activator) activateAndWait(hostname string) (string, int, error) {
-	glog.Infof("Request received for for host %s", hostname)
+	klog.Infof("Request received for for host %s", hostname)
 
 	a.indicesLock.RLock()
 	app, ok := a.appsByHost[hostname]
@@ -17,7 +17,7 @@ func (a *activator) activateAndWait(hostname string) (string, int, error) {
 		return "", 0, fmt.Errorf("No deployment found for host %s", hostname)
 	}
 
-	glog.Infof(
+	klog.Infof(
 		"Deployment %s in namespace %s may require activation",
 		app.deploymentName,
 		app.namespace,
@@ -29,7 +29,7 @@ func (a *activator) activateAndWait(hostname string) (string, int, error) {
 	deploymentKey := getKey(app.namespace, app.deploymentName)
 	deploymentActivation, ok := a.deploymentActivations[deploymentKey]
 	if ok {
-		glog.Infof(
+		klog.Infof(
 			"Found activation in-progress for deployment %s in namespace %s",
 			app.deploymentName,
 			app.namespace,
@@ -43,14 +43,14 @@ func (a *activator) activateAndWait(hostname string) (string, int, error) {
 			// still need to do this?
 			deploymentActivation, ok = a.deploymentActivations[deploymentKey]
 			if ok {
-				glog.Infof(
+				klog.Infof(
 					"Found activation in-progress for deployment %s in namespace %s",
 					app.deploymentName,
 					app.namespace,
 				)
 				return
 			}
-			glog.Infof(
+			klog.Infof(
 				"Found NO activation in-progress for deployment %s in namespace %s",
 				app.deploymentName,
 				app.namespace,
@@ -92,7 +92,7 @@ func (a *activator) activateAndWait(hostname string) (string, int, error) {
 	// or time out.
 	select {
 	case <-deploymentActivation.successCh:
-		glog.Infof("activation successful for %v:%v, now sleeping for 1 second", app.targetHost, app.targetPort)
+		klog.Infof("activation successful for %v:%v, now sleeping for 1 second", app.targetHost, app.targetPort)
 		time.Sleep(1 * time.Second)
 		return app.targetHost, app.targetPort, nil
 	case <-deploymentActivation.timeoutCh:

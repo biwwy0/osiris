@@ -5,11 +5,11 @@ import (
 
 	"github.com/deislabs/osiris/pkg/metrics/proxy/proxy"
 	"github.com/deislabs/osiris/pkg/version"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 )
 
 func runProxy(ctx context.Context) {
-	glog.Infof(
+	klog.Infof(
 		"Starting Osiris Proxy -- version %s -- commit %s",
 		version.Version(),
 		version.Commit(),
@@ -17,12 +17,12 @@ func runProxy(ctx context.Context) {
 
 	cfg, err := proxy.GetConfigFromEnvironment()
 	if err != nil {
-		glog.Fatalf("Error retrieving proxy configuration: %s", err)
+		klog.Fatalf("Error retrieving proxy configuration: %s", err)
 	}
 
 	proxy, err := proxy.NewProxy(cfg)
 	if err != nil {
-		glog.Fatalf("Error initializing proxy: %s", err)
+		klog.Fatalf("Error initializing proxy: %s", err)
 	}
 
 	// Run the proxy

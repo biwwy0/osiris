@@ -9,7 +9,7 @@ import (
 	"github.com/deislabs/osiris/pkg/healthz"
 	k8s "github.com/deislabs/osiris/pkg/kubernetes"
 	"github.com/deislabs/osiris/pkg/net/tcp"
-	"github.com/golang/glog"
+	"k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -92,9 +92,9 @@ func (a *activator) Run(ctx context.Context) {
 	ctx, cancel := context.WithCancel(ctx)
 	go func() {
 		<-ctx.Done()
-		glog.Infof("Activator is shutting down")
+		klog.Infof("Activator is shutting down")
 	}()
-	glog.Infof("Activator is started")
+	klog.Infof("Activator is started")
 	go func() {
 		a.servicesInformer.Run(ctx.Done())
 		cancel()
@@ -104,13 +104,13 @@ func (a *activator) Run(ctx context.Context) {
 		cancel()
 	}()
 	go func() {
-		glog.Infof(
+		klog.Infof(
 			"Activator server is listening on %s, proxying all deactivated, "+
 				"Osiris-enabled applications",
 			a.dynamicProxyListenAddrStr,
 		)
 		if err := a.dynamicProxy.ListenAndServe(ctx); err != nil {
-			glog.Errorf("Error listening and serving: %s", err)
+			klog.Errorf("Error listening and serving: %s", err)
 		}
 		cancel()
 	}()
