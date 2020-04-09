@@ -117,7 +117,7 @@ func (i *injector) getPodPatchOperations(
 				RunAsUser: func() *int64 { var ret int64 = 1000; return &ret }(),
 			},
 			Command: []string{"/osiris/bin/osiris"},
-			Args:    []string{"--logtostderr=true", "proxy"},
+			Args:    []string{"proxy"},
 			Env: []corev1.EnvVar{
 				{
 					Name:  "PORT_MAPPINGS",

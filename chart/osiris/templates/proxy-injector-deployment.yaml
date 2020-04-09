@@ -32,7 +32,7 @@ spec:
         command:
         - /osiris/bin/osiris
         args:
-        - --logtostderr=true
+#        - --v={{ .Values.logLevel }}
         - proxy-injector
         env:
         - name: TLS_CERT_FILE

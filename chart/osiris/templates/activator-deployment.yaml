@@ -31,7 +31,7 @@ spec:
         command:
         - /osiris/bin/osiris
         args:
-        - --logtostderr=true
+#        - --v={{ .Values.logLevel }}
         - activator
         ports:
         - name: proxy

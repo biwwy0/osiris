@@ -1,11 +1,12 @@
 nameOverride: ""
 fullnameOverride: ""
+logLevel: 4
 
 image:
   ## Image location, NOT including the tag
   repository: aaabbb000/osiris
   ## Image tag
-  tag: dc154c1-dirty # This gets automatically overridden by our release process
+  tag: b6d3390 # This gets automatically overridden by our release process
   ## "IfNotPresent", "Always", or "Never"
   pullPolicy: Always # This gets automatically overridden by our release process
 

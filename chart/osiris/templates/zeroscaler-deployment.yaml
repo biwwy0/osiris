@@ -31,7 +31,7 @@ spec:
         command:
         - /osiris/bin/osiris
         args:
-        - --logtostderr=true
+#        - --v={{ .Values.logLevel }}
         - zeroscaler
         env:
         - name: METRICS_CHECK_INTERVAL
