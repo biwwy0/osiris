@@ -23,6 +23,7 @@ func (a *activator) activateAndWait(hostname string) (string, int, error) {
 		app.namespace,
 	)
 
+
 	// Are we already activating the deployment in question?
 	var err error
 	deploymentKey := getKey(app.namespace, app.deploymentName)
