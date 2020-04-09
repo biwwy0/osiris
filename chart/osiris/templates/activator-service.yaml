@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "osiris.fullname" . }}-activator
+  labels:
+    app.kubernetes.io/name: {{ include "osiris.name" . }}-activator
+    helm.sh/chart: {{ include "osiris.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: ClusterIP
+  clusterIP: {{ .Values.activator.clusterIP }}
+  ports:
+  - port: 5000
+    targetPort: proxy
+    protocol: TCP
+    name: proxy
+  selector:
+    app.kubernetes.io/name: {{ include "osiris.name" . }}-activator
+    app.kubernetes.io/instance: {{ .Release.Name }}
