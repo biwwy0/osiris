@@ -7,12 +7,12 @@ import (
 
 	"github.com/deislabs/osiris/pkg/healthz"
 	k8s "github.com/deislabs/osiris/pkg/kubernetes"
-	"k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
+	"k8s.io/klog"
 )
 
 // Controller is an interface for a component that can take over management of
@@ -124,12 +124,12 @@ func (c *controller) syncAppService(obj interface{}) {
 		)
 		c.ensureServiceEndpointsManaged(svc)
 	} else {
-		klog.Infof(
-			"Notified about new or updated non-Osiris-enabled service %s in "+
-				"namespace %s",
-			svc.Name,
-			svc.Namespace,
-		)
+//		klog.Infof(
+//			"Notified about new or updated non-Osiris-enabled service %s in "+
+//				"namespace %s",
+//			svc.Name,
+//			svc.Namespace,
+//		)
 		c.ensureServiceEndpointsNotManaged(svc)
 	}
 }

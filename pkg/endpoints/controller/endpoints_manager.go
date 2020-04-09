@@ -10,12 +10,12 @@ import (
 
 	"github.com/deislabs/osiris/pkg/kubernetes"
 
-	"k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/tools/cache"
+	"k8s.io/klog"
 	endpointsv1 "k8s.io/kubernetes/pkg/api/v1/endpoints"
 )
 
@@ -25,7 +25,7 @@ const (
 	// TolerateUnreadyEndpointsAnnotation definition from
 	// k8s.io/kubernetes/pkg/controller/endpoint
 	tolerateAnnoration = "service.alpha.kubernetes.io/tolerate-unready-endpoints"
-	clusterIP = "10.3.0.2" // hardcoding IP for activator service
+	clusterIP          = "10.3.0.2" // hardcoding IP for activator service
 )
 
 // endpointsManager is a controller responsible for the on-going management of
@@ -128,6 +128,7 @@ func (e *endpointsManager) syncAppPod(obj interface{}) {
 	e.readyAppPodsLock.Lock()
 	defer e.readyAppPodsLock.Unlock()
 	pod := obj.(*corev1.Pod)
+	klog.Infof("Got notified about AppPod %v", pod)
 	var ready bool
 	for _, condition := range pod.Status.Conditions {
 		if condition.Type == corev1.PodReady {
@@ -202,6 +203,7 @@ func (e *endpointsManager) syncDeletedAppPod(obj interface{}) {
 // service.
 func (e *endpointsManager) syncEndpoints() {
 	subsets := []corev1.EndpointSubset{}
+	klog.Infof("And we got this endpoint object to parse %v", e)
 	for _, servicePort := range e.service.Spec.Ports {
 		var foundSuitableAppPod bool
 		for _, appPod := range e.readyAppPods {
@@ -227,7 +229,7 @@ func (e *endpointsManager) syncEndpoints() {
 		}
 		if !foundSuitableAppPod {
 			// None of the ready pods expose a back end service for this service's
-			// port. i.e. There are no endpoints. Add activator endpoints instead.
+			// port. i.e. There are no endpoints. Add activator cluster svc IP instead.
 			subsets = append(subsets, corev1.EndpointSubset{
 				Addresses: []corev1.EndpointAddress{{IP: clusterIP}},
 				Ports:     []corev1.EndpointPort{{Port: 5000, Protocol: "TCP"}},
@@ -237,7 +239,7 @@ func (e *endpointsManager) syncEndpoints() {
 	subsets = endpointsv1.RepackSubsets(subsets)
 
 	klog.Infof(
-		"Creating or updating endpoints object for service %s in namespace %s with subsets %v",
+		"Creating or updating endpoints object for service %s in namespace %s with endpoints: %v",
 		e.service.Name,
 		e.service.Namespace,
 		subsets,
